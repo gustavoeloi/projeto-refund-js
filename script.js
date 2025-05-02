@@ -78,6 +78,8 @@ const createExpense = (expense) => {
   } catch (error) {
     alert("Não foi possível criar uma despesa");
     console.log(error);
+  } finally {
+    clearInputs();
   }
 };
 
@@ -131,3 +133,11 @@ expenseList.addEventListener("click", (e) => {
   }
   updateQuantity();
 });
+
+const clearInputs = () => {
+  expense.value = "";
+  category.value = "";
+  amount.value = "";
+
+  expense.focus();
+};
