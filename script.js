@@ -1,4 +1,9 @@
+const form = document.querySelector("form");
 const amount = document.getElementById("amount");
+const category = document.getElementById("category");
+const expense = document.getElementById("expense");
+
+const expenseList = document.querySelector("ul");
 
 amount.oninput = () => {
   let value = amount.value.replace(/\D/g, "");
@@ -13,4 +18,62 @@ const formatBRLCurrency = (amount) => {
     style: "currency",
     currency: "BRL",
   });
+};
+
+form.onsubmit = (event) => {
+  event.preventDefault();
+
+  const newExpense = {
+    id: new Date().getTime(),
+    expense: expense.value,
+    id_category: category.value,
+    category_name: category.options[category.selectedIndex].text,
+    amount: amount.value,
+    created_at: new Date(),
+  };
+
+  createExpense(newExpense);
+};
+
+const createExpense = (expense) => {
+  try {
+    const itemExpense = document.createElement("li");
+    itemExpense.classList.add("expense");
+
+    const expenseImg = document.createElement("img");
+    expenseImg.setAttribute("src", `/img/${expense.id_category}.svg`);
+
+    const expenseInfo = document.createElement("div");
+    expenseInfo.classList.add("expense-info");
+
+    const nameExpense = document.createElement("strong");
+    nameExpense.textContent = expense.expense;
+
+    const categoryExpense = document.createElement("span");
+    categoryExpense.textContent = expense.category_name;
+
+    expenseInfo.append(nameExpense, categoryExpense);
+
+    const expenseAmount = document.createElement("span");
+    expenseAmount.classList.add("expense-amount");
+
+    const small = document.createElement("small");
+    small.textContent = "R$";
+
+    expenseAmount.append(small, expense.amount.replace("R$", ""));
+
+    const removeImage = document.createElement("img");
+    removeImage.setAttribute("src", "img/remove.svg");
+    removeImage.setAttribute("alt", "remover");
+    removeImage.classList.add("remove-icon");
+
+    //Coloca os elementos dentro do item da lisat
+    itemExpense.append(expenseImg, expenseInfo, expenseAmount, removeImage);
+
+    // Adicionando o item na lista
+    expenseList.append(itemExpense);
+  } catch (error) {
+    alert("Não foi possível criar uma despesa");
+    console.log(error);
+  }
 };
