@@ -4,6 +4,8 @@ const category = document.getElementById("category");
 const expense = document.getElementById("expense");
 
 const expenseList = document.querySelector("ul");
+const expenseQuantity = document.querySelector("aside header p span");
+const expenseAmount = document.querySelector("aside header h2");
 
 amount.oninput = () => {
   let value = amount.value.replace(/\D/g, "");
@@ -72,8 +74,60 @@ const createExpense = (expense) => {
 
     // Adicionando o item na lista
     expenseList.append(itemExpense);
+    updateQuantity();
   } catch (error) {
     alert("Não foi possível criar uma despesa");
     console.log(error);
   }
 };
+
+const updateQuantity = () => {
+  try {
+    const item = expenseList.children;
+
+    expenseQuantity.textContent = `${item.length} ${
+      item.length > 1 ? "despesas" : "despesa"
+    }`;
+
+    let total = 0;
+
+    for (let i = 0; i < item.length; i++) {
+      const itemHTML = item[i].querySelector(".expense-amount");
+
+      let value = itemHTML.textContent.replace(/[^\d,]/g, "").replace(",", ".");
+
+      value = parseFloat(value);
+
+      if (isNaN(value)) {
+        throw new Error(
+          "Não foi possível calcular o total. O valor não parece ser um número válido"
+        );
+      } else {
+        total += value;
+      }
+    }
+
+    expenseAmount.innerHTML = "";
+
+    const symbolBRL = "R$";
+    const smallH2 = document.createElement("small");
+
+    smallH2.append(symbolBRL);
+
+    smallH2.textContent = formatBRLCurrency(total).replace("R$", "");
+    expenseAmount.append(symbolBRL, smallH2);
+  } catch (error) {
+    alert("Não foi possível atualizar as despesas");
+    console.log(error);
+  }
+};
+
+// Evento que captura o clique nos itens da lista
+
+expenseList.addEventListener("click", (e) => {
+  if (e.target.classList.contains("remove-icon")) {
+    const item = e.target.closest(".expense");
+    item.remove();
+  }
+  updateQuantity();
+});
